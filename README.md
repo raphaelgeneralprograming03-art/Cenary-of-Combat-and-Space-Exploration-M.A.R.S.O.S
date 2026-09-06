@@ -16,35 +16,20 @@
             color: #00f0ff;
             font-family: 'Courier New', Courier, monospace;
             overflow: hidden;
-        }
-        #canvas-container {
-            width: 100vw;
             height: 100vh;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
-        }
-        .hud {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10;
-            pointer-events: none;
-            padding: 20px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            box-shadow: inset 0 0 100px rgba(0, 240, 255, 0.15);
+            padding: 20px;
             border: 2px solid rgba(0, 240, 255, 0.3);
+            box-shadow: inset 0 0 100px rgba(0, 240, 255, 0.15);
         }
         header {
             background: rgba(2, 2, 8, 0.95);
             border: 1px solid #00f0ff;
             padding: 15px;
             box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+            z-index: 10;
         }
         header h1 {
             font-size: 20px;
@@ -59,12 +44,47 @@
             color: #ffffff;
         }
         .status-online { color: #00ff00; font-weight: bold; }
+        
+        /* Área Central do Painel Visual */
+        .viewport-central {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        /* Efeito de Escudo Energético MHD Pulsante */
+        .escudo-mhd {
+            width: 420px;
+            height: 520px;
+            border: 2px dashed rgba(0, 240, 255, 0.4);
+            border-radius: 50% / 40%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.1), inset 0 0 30px rgba(0, 240, 255, 0.05);
+            animation: pulsarEscudo 3s infinite ease-in-out;
+        }
+
+        /* Armadura Gráfica em Alta Definição (SVG Vector) */
+        .armadura-svg {
+            width: 300px;
+            height: 450px;
+            filter: drop-shadow(0 0 15px rgba(0, 240, 255, 0.6));
+        }
+
+        .paineis-inferiores {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            z-index: 10;
+        }
+
         .combat-log {
-            position: absolute;
-            left: 20px;
-            bottom: 40px;
             width: 450px;
-            height: 230px;
+            height: 180px;
             background: rgba(2, 2, 8, 0.95);
             border: 1px solid #ff3333;
             padding: 15px;
@@ -85,10 +105,8 @@
         }
         .log-system { color: #00f0ff; }
         .log-alert { color: #ffff00; font-weight: bold; }
+        
         .controls-hint {
-            position: absolute;
-            right: 20px;
-            bottom: 40px;
             background: rgba(2, 2, 8, 0.95);
             border: 1px solid #00f0ff;
             color: #00f0ff;
@@ -96,31 +114,85 @@
             font-size: 12px;
             text-align: right;
             box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+            width: 300px;
         }
+
+        @keyframes pulsarEscudo {
+            0% { transform: scale(1); opacity: 0.7; box-shadow: 0 0 40px rgba(0, 240, 255, 0.2); }
+            50% { transform: scale(1.03); opacity: 1; box-shadow: 0 0 60px rgba(0, 240, 255, 0.4); }
+            100% { transform: scale(1); opacity: 0.7; box-shadow: 0 0 40px rgba(0, 240, 255, 0.2); }
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateX(-10px); }
             to { opacity: 1; transform: translateX(0); }
         }
     </style>
-    <!-- Importando Three.js via CDN confiável -->
-    <script src="https://cloudflare.com"></script>
 </head>
 <body>
 
-    <div id="canvas-container"></div>
+    <header>
+        <h1>SISTEMA M.A.R.S.O.S - MAPEAMENTO DA ARQUITETURA TÁTICA</h1>
+        <div class="system-status">
+            <div>M.A.R.S.O.S: <span class="status-online">CONECTADO</span></div>
+            <div>SROS MESH: <span class="status-online">SÍNCRONO</span></div>
+            <div>ESCUDO MHD: <span class="status-online">ATIVADO</span></div>
+            <div>S.A.M.S: <span class="status-online">PRONTO</span></div>
+            <div>G.FARADAY: <span class="status-online">PROTEGIDO</span></div>
+        </div>
+    </header>
 
-    <div class="hud">
-        <header>
-            <h1>SISTEMA M.A.R.S.O.S - DIAGNÓSTICO DIGITAL ACTIVO</h1>
-            <div class="system-status">
-                <div>M.A.R.S.O.S: <span class="status-online">CONECTADO</span></div>
-                <div>SROS MESH: <span class="status-online">SÍNCRONO</span></div>
-                <div>ESCUDO MHD: <span class="status-online">ATIVADO</span></div>
-                <div>S.A.M.S: <span class="status-online">PRONTO</span></div>
-                <div>G.FARADAY: <span class="status-online">PROTEGIDO</span></div>
-            </div>
-        </header>
+    <!-- CONTAINER VISUAL DA ARMADURA COM ESCUDO ATIVO -->
+    <div class="viewport-central">
+        <div class="escudo-mhd">
+            
+            <!-- Desenho Direto da Armadura via Vetores SVG Sólidos -->
+            <svg class="armadura-svg" viewBox="0 0 200 300" xmlns="http://w3.org">
+                <!-- Definições de Cores Metálicas e Efeitos Neon -->
+                <defs>
+                    <linearGradient id="blindagem" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#0033aa" />
+                        <stop offset="100%" stop-color="#001144" />
+                    </linearGradient>
+                    <linearGradient id="articulacao" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#ffaa00" />
+                        <stop offset="100%" stop-color="#885500" />
+                    </linearGradient>
+                </defs>
 
+                <!-- Pernas e Coxas -->
+                <rect x="65" y="180" width="25" height="80" rx="5" fill="url(#blindagem)" stroke="#00f0ff" stroke-width="1.5"/>
+                <rect x="110" y="180" width="25" height="80" rx="5" fill="url(#blindagem)" stroke="#00f0ff" stroke-width="1.5"/>
+                
+                <!-- Botas Propulsoras MHD -->
+                <rect x="60" y="260" width="32" height="20" rx="4" fill="url(#articulacao)" stroke="#fff" stroke-width="1"/>
+                <rect x="108" y="260" width="32" height="20" rx="4" fill="url(#articulacao)" stroke="#fff" stroke-width="1"/>
+
+                <!-- Torso / Placa Peitoral -->
+                <path d="M 50 80 L 150 80 L 135 180 L 65 180 Z" fill="url(#blindagem)" stroke="#00f0ff" stroke-width="2"/>
+                
+                <!-- Reator de Fusão MHD Central (Peito) -->
+                <circle cx="100" cy="120" r="18" fill="#00f0ff" filter="drop-shadow(0 0 8px #00f0ff)" stroke="#fff" stroke-width="1.5"/>
+                <circle cx="100" cy="120" r="8" fill="#ffffff" />
+
+                <!-- Ombreiras de Amortecimento S.A.M.S -->
+                <circle cx="42" cy="90" r="15" fill="url(#articulacao)" stroke="#00f0ff" stroke-width="1"/>
+                <circle cx="158" cy="90" r="15" fill="url(#articulacao)" stroke="#00f0ff" stroke-width="1"/>
+
+                <!-- Braços Direito e Esquerdo -->
+                <rect x="30" y="105" width="20" height="65" rx="4" fill="url(#blindagem)" stroke="#00f0ff" stroke-width="1.5"/>
+                <rect x="150" y="105" width="20" height="65" rx="4" fill="url(#blindagem)" stroke="#00f0ff" stroke-width="1.5"/>
+
+                <!-- Capacete e Cúpula de Comando -->
+                <circle cx="100" cy="45" r="25" fill="url(#blindagem)" stroke="#00f0ff" stroke-width="2"/>
+                <!-- Viseira com HUD Holográfico -->
+                <ellipse cx="100" cy="45" rx="18" ry="10" fill="#00f0ff" opacity="0.8" stroke="#fff" stroke-width="1"/>
+            </svg>
+
+        </div>
+    </div>
+
+    <div class="paineis-inferiores">
         <div class="combat-log" id="log-box"></div>
 
         <div class="controls-hint">
@@ -132,130 +204,7 @@
     </div>
 
     <script>
-        const container = document.getElementById('canvas-container');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x02020a); // Fundo espacial profundo
-
-        // Câmera posicionada perfeitamente na frente
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-        camera.position.set(0, 0.4, 4.5);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        container.appendChild(renderer.domElement);
-
-        // Iluminação Global redundante para garantir visibilidade
-        const lightAmbient = new THREE.AmbientLight(0xffffff, 1.5);
-        scene.add(lightAmbient);
-
-        const lightDir = new THREE.DirectionalLight(0x00f0ff, 2);
-        lightDir.position.set(2, 4, 3);
-        scene.add(lightDir);
-
-        const armorGroup = new THREE.Group();
-
-        // MATERIAIS DE ALTA VISIBILIDADE (Garantem cor mesmo sem luzes configuradas)
-        const matBlindagem = new THREE.MeshPhongMaterial({ 
-            color: 0x0044aa, 
-            emissive: 0x001133, // Brilho azul escuro de fundo
-            specular: 0x00f0ff, 
-            shininess: 30 
-        });
-        
-        const matNucleoEReator = new THREE.MeshPhongMaterial({ 
-            color: 0x00f0ff, 
-            emissive: 0x00aaff, // Brilho neon ativo
-            shininess: 100 
-        });
-
-        const matArticulacoes = new THREE.MeshPhongMaterial({ 
-            color: 0xffaa00, 
-            emissive: 0x442200, // Brilho dourado ativo
-            shininess: 50 
-        });
-
-        // --- MODELAGEM DA ARMADURA EM VOLUMES SÓLIDOS BRILHANTES ---
-
-        // 1. CAPACETE
-        const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.35, 32, 32), matBlindagem);
-        helmet.position.y = 1.3;
-        armorGroup.add(helmet);
-
-        // Viseira brilhante
-        const visor = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 16), matNucleoEReator);
-        visor.scale.set(1.1, 0.6, 1);
-        visor.position.set(0, 1.35, 0.15);
-        armorGroup.add(visor);
-
-        // 2. TORSO / PEITO
-        const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.35, 1.0, 16), matBlindagem);
-        torso.position.y = 0.5;
-        armorGroup.add(torso);
-
-        // Reator MHD Central no peito
-        const mhdCore = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.08, 16), matNucleoEReator);
-        mhdCore.rotation.x = Math.PI / 2;
-        mhdCore.position.set(0, 0.65, 0.4);
-        armorGroup.add(mhdCore);
-
-        // 3. OMBROS E BRAÇOS
-        const shoulderL = new THREE.Mesh(new THREE.SphereGeometry(0.18, 16, 16), matArticulacoes);
-        shoulderL.position.set(-0.65, 0.85, 0);
-        const shoulderR = shoulderL.clone();
-        shoulderR.position.x = 0.65;
-        armorGroup.add(shoulderL, shoulderR);
-
-        const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.08, 0.6, 16), matBlindagem);
-        armL.position.set(-0.65, 0.45, 0);
-        const armR = armL.clone();
-        armR.position.x = 0.65;
-        armorGroup.add(armL, armR);
-
-        // 4. PERNAS E BOTAS PROPULSORAS
-        const legL = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.09, 0.9, 16), matBlindagem);
-        legL.position.set(-0.25, -0.4, 0);
-        const legR = legL.clone();
-        legR.position.x = 0.25;
-        armorGroup.add(legL, legR);
-
-        const bootL = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.15, 0.3), matArticulacoes);
-        bootL.position.set(-0.25, -0.9, 0.05);
-        const bootR = bootL.clone();
-        bootR.position.x = 0.25;
-        armorGroup.add(bootL, bootR);
-
-        scene.add(armorGroup);
-
-        // --- ESCUDO ENERGÉTICO MHD EXTERNO ---
-        const shieldGeo = new THREE.SphereGeometry(1.7, 32, 16);
-        const shieldMat = new THREE.MeshBasicMaterial({
-            color: 0x00f0ff,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.1
-        });
-        const shield = new THREE.Mesh(shieldGeo, shieldMat);
-        scene.add(shield);
-
-        // --- MICROMETEORITOS CINÉTICOS (Pontos brilhantes em movimento) ---
-        const pCount = 60;
-        const pGeo = new THREE.BufferGeometry();
-        const pPos = new Float32Array(pCount * 3);
-        const pSpeeds = [];
-
-        for(let i=0; i<pCount; i++) {
-            pPos[i*3] = (Math.random() - 0.5) * 6;
-            pPos[i*3+1] = (Math.random() - 0.5) * 5;
-            pPos[i*3+2] = Math.random() * 5 + 2;
-            pSpeeds.push(Math.random() * 0.03 + 0.02);
-        }
-
-        pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-        const pMat = new THREE.PointsMaterial({ color: 0xffcc00, size: 0.07 });
-        const spaceDebris = new THREE.Points(pGeo, pMat);
-        scene.add(spaceDebris);
-
-        // --- FEED DE LOGS EM TEMPO REAL ---
+        // --- LOGS DE EVENTOS DO CENÁRIO DE COMBATE ---
         const logBox = document.getElementById('log-box');
         const logs = [
             "<span class='log-alert'>[SROS]</span> Radiação espacial extrema detectada. Temperatura exterior: -273°C.",
@@ -264,3 +213,22 @@
             "<span class='log-system'>[S.A.M.S]</span> Impactos cinéticos de detritos espaciais absorvidos sem fadiga corporal.",
             "<span class='log-system'>[M.A.R.S.O.S]</span> Fissura detectada. Injeção de CO2 e Carbono ativa.",
             "<span class='log-system'>[IA]</span> Gêmeo Digital concluiu o realinhamento estético da armadura.",
+            "<span class='log-system'>[BIOLÓGICO]</span> Níveis de cortisol regulados. Estresse mental anulado.",
+            "<span class='log-system'>[PROPULSÃO]</span> Ciclo fechado ativo. Recombustão de Hélio/Hidrogênio a 100%."
+        ];
+        
+        let currentLog = 0;
+        function updateHUD() {
+            const div = document.createElement('div');
+            div.className = 'log-entry';
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${logs[currentLog]}`;
+            logBox.appendChild(div);
+            currentLog = (currentLog + 1) % logs.length;
+
+            if (logBox.children.length > 5) logBox.removeChild(logBox.firstChild);
+            setTimeout(updateHUD, 2800);
+        }
+        updateHUD();
+    </script>
+</body>
+</html>
